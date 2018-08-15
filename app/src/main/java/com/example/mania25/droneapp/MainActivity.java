@@ -4,11 +4,18 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.NumberPicker;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -42,15 +49,17 @@ public class MainActivity extends AppCompatActivity
             lblVehicleRollValue, lblVehiclePitchValue, lblVehicleYawValue;
 
     private RelativeLayout layoutGamepad;
+    private LinearLayout layoutAltitudeSet;
 
+    private EditText txtAltitude;
     private JoystickView joystickYawDirection;
-    private Button btnTakeOfforLand;
+    private Button btnDecrementSpeed, btnTakeOfforLand, btnIncrementSpeed;
 
     private GoogleMap mMap;
     private MarkerOptions gMapMarkerOptions;
     private Marker quadcopterMarker;
 
-    private String mqttBrokerUrl = "tcp://192.168.43.150:1883";
+    private String mqttBrokerUrl = "tcp://172.31.0.220:1883";
     private MqttAndroidClient mqttAndroidClient;
 
     @Override
@@ -64,6 +73,7 @@ public class MainActivity extends AppCompatActivity
         imgZoomInMap = (ImageView)findViewById(R.id.imgZoomInMap);
         imgZoomOutMap = (ImageView)findViewById(R.id.imgZoomOutMap);
 
+        layoutAltitudeSet = (LinearLayout)findViewById(R.id.layoutAltitudeSet);
         layoutGamepad = (RelativeLayout)findViewById(R.id.layoutGamepad);
 
         imgForward = (ImageView)findViewById(R.id.imgForward);
@@ -72,8 +82,13 @@ public class MainActivity extends AppCompatActivity
         imgLeft = (ImageView)findViewById(R.id.imgLeft);
         imgPowerOffDroneSystem = (ImageView)findViewById(R.id.imgPowerOffDroneSystem);
 
+        txtAltitude = (EditText) findViewById(R.id.txtAltitude);
         joystickYawDirection = (JoystickView)findViewById(R.id.joystickYawDirection);
+
+        btnDecrementSpeed = (Button)findViewById(R.id.btnDecrementSpeed);
         btnTakeOfforLand = (Button)findViewById(R.id.btnTakeOfforLand);
+        btnIncrementSpeed = (Button)findViewById(R.id.btnIncrementSpeed);
+
 
         lblVehicleAltitude = (TextView)findViewById(R.id.lblVehicleAltitude);
         lblVehicleMode = (TextView)findViewById(R.id.lblVehicleMode);
@@ -105,8 +120,17 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
+                int action = event.getActionMasked();
                 long currentTimeMillis = System.currentTimeMillis();
-                publishMessage("/controlling-drone", "ce28fd41-2e21-479b-b78e-77a88f759c0b|FORWARD|" + String.valueOf(currentTimeMillis));
+
+                if (action == MotionEvent.ACTION_UP) {
+                    publishMessage("/controlling-drone", "ce28fd41-2e21-479b-b78e-77a88f759c0b|BRAKE|" + String.valueOf(currentTimeMillis));
+//                    publishMessage("/controlling-drone", "BRAKE");
+//                } else {
+                    publishMessage("/controlling-drone", "ce28fd41-2e21-479b-b78e-77a88f759c0b|FORWARD|" + String.valueOf(currentTimeMillis));
+//                    publishMessage("/controlling-drone", "FORWARD");
+                }
+
                 return true;
             }
         });
@@ -115,8 +139,16 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
+                int action = event.getActionMasked();
                 long currentTimeMillis = System.currentTimeMillis();
-                publishMessage("/controlling-drone", "ce28fd41-2e21-479b-b78e-77a88f759c0b|BACKWARD|" + String.valueOf(currentTimeMillis));
+
+                if (action == MotionEvent.ACTION_UP) {
+                    publishMessage("/controlling-drone", "ce28fd41-2e21-479b-b78e-77a88f759c0b|BRAKE|" + String.valueOf(currentTimeMillis));
+                } else {
+                    publishMessage("/controlling-drone", "ce28fd41-2e21-479b-b78e-77a88f759c0b|BACKWARD|" + String.valueOf(currentTimeMillis));
+//                    publishMessage("/controlling-drone", "BACKWARD");
+                }
+
                 return true;
             }
         });
@@ -125,9 +157,16 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
+                int action = event.getActionMasked();
                 long currentTimeMillis = System.currentTimeMillis();
-                publishMessage("/controlling-drone", "ce28fd41-2e21-479b-b78e-77a88f759c0b|LEFT|" + String.valueOf(currentTimeMillis));
-                Log.d("onTouch: ", "LEFT");
+
+                if (action == MotionEvent.ACTION_UP) {
+                    publishMessage("/controlling-drone", "ce28fd41-2e21-479b-b78e-77a88f759c0b|BRAKE|" + String.valueOf(currentTimeMillis));
+                } else {
+                    publishMessage("/controlling-drone", "ce28fd41-2e21-479b-b78e-77a88f759c0b|LEFT|" + String.valueOf(currentTimeMillis));
+//                    publishMessage("/controlling-drone", "LEFT");
+                }
+
                 return true;
             }
         });
@@ -136,8 +175,16 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
+                int action = event.getActionMasked();
                 long currentTimeMillis = System.currentTimeMillis();
-                publishMessage("/controlling-drone", "ce28fd41-2e21-479b-b78e-77a88f759c0b|RIGHT|" + String.valueOf(currentTimeMillis));
+
+                if (action == MotionEvent.ACTION_UP) {
+                    publishMessage("/controlling-drone", "ce28fd41-2e21-479b-b78e-77a88f759c0b|BRAKE|" + String.valueOf(currentTimeMillis));
+                } else {
+                    publishMessage("/controlling-drone", "ce28fd41-2e21-479b-b78e-77a88f759c0b|RIGHT|" + String.valueOf(currentTimeMillis));
+//                    publishMessage("/controlling-drone", "RIGHT");
+                }
+
                 return true;
             }
         });
@@ -168,7 +215,13 @@ public class MainActivity extends AppCompatActivity
         joystickYawDirection.setOnMoveListener(new JoystickView.OnMoveListener() {
             @Override
             public void onMove(int angle, int strength) {
-//                Log.d("onMove: ", String.valueOf(angle) + " °");
+                long currentTimeMillis = System.currentTimeMillis();
+
+                if (strength >= 75) {
+                    publishMessage("/controlling-drone", "ce28fd41-2e21-479b-b78e-77a88f759c0b|YAW:" + String.valueOf(angle) + "|" + String.valueOf(currentTimeMillis));
+                }
+
+                Log.d("onMove: ", String.valueOf(angle) + " °");
             }
         });
 
@@ -178,10 +231,51 @@ public class MainActivity extends AppCompatActivity
                 if (MainActivity.this.lblVehicleArmStatus.getText().toString().toUpperCase().equals("TRUE")) {
                     long currentTimeMillis = System.currentTimeMillis();
                     publishMessage("/controlling-drone", "ce28fd41-2e21-479b-b78e-77a88f759c0b|LAND|" + String.valueOf(currentTimeMillis));
+//                    publishMessage("/controlling-drone", "LAND");
                 } else {
                     long currentTimeMillis = System.currentTimeMillis();
                     publishMessage("/controlling-drone", "ce28fd41-2e21-479b-b78e-77a88f759c0b|TAKEOFF|" + String.valueOf(currentTimeMillis));
+//                    publishMessage("/controlling-drone", "TAKEOFF");
                 }
+            }
+        });
+
+        txtAltitude.setOnEditorActionListener(
+                new TextView.OnEditorActionListener() {
+                    @Override
+                    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                        if (actionId == EditorInfo.IME_ACTION_SEARCH ||
+                                actionId == EditorInfo.IME_ACTION_DONE ||
+                                event != null &&
+                                        event.getAction() == KeyEvent.ACTION_DOWN &&
+                                        event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+                            if (event == null || !event.isShiftPressed()) {
+                                // the user is done typing.
+                                long currentTimeMillis = System.currentTimeMillis();
+
+                                publishMessage("/controlling-drone", "ce28fd41-2e21-479b-b78e-77a88f759c0b|ALT:" + v.getText().toString() + "|" + String.valueOf(currentTimeMillis));
+
+                                return false; // consume.
+                            }
+                        }
+                        return false; // pass on to other listeners.
+                    }
+                }
+        );
+
+        btnIncrementSpeed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                long currentTimeMillis = System.currentTimeMillis();
+                publishMessage("/controlling-drone", "ce28fd41-2e21-479b-b78e-77a88f759c0b|INCR|" + String.valueOf(currentTimeMillis));
+            }
+        });
+
+        btnDecrementSpeed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                long currentTimeMillis = System.currentTimeMillis();
+                publishMessage("/controlling-drone", "ce28fd41-2e21-479b-b78e-77a88f759c0b|DECR" + "|" + String.valueOf(currentTimeMillis));
             }
         });
 
@@ -243,10 +337,16 @@ public class MainActivity extends AppCompatActivity
                     if (vehicleArmedStatus.toUpperCase().equals("TRUE")) {
                         joystickYawDirection.setVisibility(View.VISIBLE);
                         layoutGamepad.setVisibility(View.VISIBLE);
+                        btnDecrementSpeed.setVisibility(View.VISIBLE);
+                        btnIncrementSpeed.setVisibility(View.VISIBLE);
+                        layoutAltitudeSet.setVisibility(View.VISIBLE);
                         btnTakeOfforLand.setText("Land");
                     } else {
                         joystickYawDirection.setVisibility(View.GONE);
                         layoutGamepad.setVisibility(View.GONE);
+                        btnDecrementSpeed.setVisibility(View.GONE);
+                        btnIncrementSpeed.setVisibility(View.GONE);
+                        layoutAltitudeSet.setVisibility(View.GONE);
                         btnTakeOfforLand.setText("Take Off");
                     }
                 }

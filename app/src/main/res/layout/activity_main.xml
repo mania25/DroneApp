@@ -88,7 +88,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:padding="10dp"
-        android:layout_marginLeft="10dp">
+        android:layout_marginLeft="10dp"
+        android:visibility="gone">
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -133,6 +134,19 @@
         </LinearLayout>
     </RelativeLayout>
 
+
+    <Button
+        android:id="@+id/btnDecrementSpeed"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:text="-"
+        android:textAllCaps="false"
+        android:background="#33000000"
+        android:layout_above="@+id/layoutVehicleDirectionStatus"
+        android:layout_toLeftOf="@id/btnTakeOfforLand"
+        android:layout_marginRight="20dp"
+        android:visibility="gone"/>
+
     <Button
         android:id="@+id/btnTakeOfforLand"
         android:layout_width="wrap_content"
@@ -142,6 +156,18 @@
         android:background="#33000000"
         android:layout_above="@+id/layoutVehicleDirectionStatus"
         android:layout_centerHorizontal="true"/>
+
+    <Button
+        android:id="@+id/btnIncrementSpeed"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:text="+"
+        android:textAllCaps="false"
+        android:background="#33000000"
+        android:layout_above="@+id/layoutVehicleDirectionStatus"
+        android:layout_toRightOf="@+id/btnTakeOfforLand"
+        android:layout_marginLeft="20dp"
+        android:visibility="gone"/>
 
     <LinearLayout
         android:id="@+id/layoutVehicleDirectionStatus"
@@ -209,16 +235,49 @@
         android:layout_marginTop="10dp"
         android:layout_marginRight="15dp"/>
 
+    <LinearLayout
+        android:id="@+id/layoutAltitudeSet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/layoutStatusBar"
+        android:gravity="center"
+        android:padding="5dp"
+        android:background="#1A000000"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="10dp"
+        android:visibility="gone">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Altitude"
+            android:textColor="@android:color/black"/>
+        <EditText
+            android:id="@+id/txtAltitude"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="numberDecimal"
+            android:textColor="@android:color/white"
+            android:maxLines="1"
+            android:maxLength="4"
+            android:textAlignment="center"
+            android:layout_marginTop="5dp" />
+    </LinearLayout>
+
     <io.github.controlwear.virtual.joystick.android.JoystickView
         xmlns:custom="http://schemas.android.com/apk/res-auto"
         android:id="@+id/joystickYawDirection"
         android:layout_width="140dp"
         android:layout_height="wrap_content"
+        android:rotation="180"
         custom:JV_buttonColor="#FF6E40"
         custom:JV_buttonSizeRatio="30%"
         custom:JV_borderColor="#00796B"
         custom:JV_borderWidth="4dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        custom:JV_fixedCenter="false"/>
+        custom:JV_fixedCenter="false"
+        custom:JV_autoReCenterButton="false"
+        android:visibility="gone"/>
 </RelativeLayout>
